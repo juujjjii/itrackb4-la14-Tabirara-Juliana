@@ -12,6 +12,7 @@
     @include('partials._nav')
 
     <main class="container mt-4">
+
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -19,6 +20,7 @@
         @endif
 
         @yield('content')
+
     </main>
 
     <footer class="container text-center text-muted mt-5 mb-3">

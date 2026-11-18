@@ -7,28 +7,30 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="mb-0">My Subjects List</h1>
-    <a href="{{ route('subjects.create') }}" class="btn btn-success">
-        + Add Subject
-    </a>
+
+    @auth
+        <a href="{{ route('subjects.create') }}" class="btn btn-primary">
+            + Add Subject
+        </a>
+    @endauth
 </div>
 
 {{-- Search and Filter Form --}}
 <form method="GET" action="{{ route('subjects.index') }}" class="mb-4">
-    <div class="row g-3">
+    <div class="row g-3 align-items-end">
 
-        {{-- Search by Code --}}
-        <div class="col-md-4">
-            <input
-                type="text"
-                name="code"
-                id="code"
-                class="form-control"
-                placeholder="Search subject code"
-                value="{{ request('code') }}">
+        <div class="col-md-3">
+            <label for="code" class="form-label">Search by Code</label>
+            <input type="text" name="code" id="code"
+                   class="form-control"
+                   placeholder="Search subject code"
+                   value="{{ request('code') }}">
         </div>
 
-        {{-- Filter by Prerequisite --}}
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <label for="prerequisite_id" class="form-label">
+                Prerequisite
+            </label>
             <select name="prerequisite_id" id="prerequisite_id"
                     class="form-select">
                 <option value="">All Prerequisites</option>
@@ -42,27 +44,36 @@
             </select>
         </div>
 
-        {{-- Filter by Status and Buttons --}}
-        <div class="col-md-4">
+        <div class="col-md-2">
+            <label for="sort" class="form-label">Sort By</label>
+            <select name="sort" id="sort" class="form-select">
+                <option value="code" @selected($sort === 'code')>
+                    Subject Code
+                </option>
+                <option value="title" @selected($sort === 'title')>
+                    Subject Title
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="is_active" class="form-label">Status</label>
+            <select name="is_active" id="is_active" class="form-select">
+                <option value="">Any Status</option>
+                <option value="1" @selected(request('is_active') === '1')>
+                    Active
+                </option>
+                <option value="0" @selected(request('is_active') === '0')>
+                    Inactive
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
             <div class="d-flex gap-2">
-                <select name="is_active" id="is_active" class="form-select">
-                    <option value="">Any Status</option>
-                    <option value="1" @selected(request('is_active') === '1')>
-                        Active
-                    </option>
-                    <option value="0" @selected(request('is_active') === '0')>
-                        Inactive
-                    </option>
-                </select>
-
-                <button type="submit" class="btn btn-primary">
-                    Apply
-                </button>
-
+                <button type="submit" class="btn btn-primary">Apply</button>
                 <a href="{{ route('subjects.index') }}"
-                   class="btn btn-secondary">
-                    Clear
-                </a>
+                   class="btn btn-secondary">Clear</a>
             </div>
         </div>
 
@@ -88,7 +99,10 @@
             <th>Title</th>
             <th>Units</th>
             <th>Prerequisite</th>
-            <th>Actions</th>
+
+            @auth
+                <th>Actions</th>
+            @endauth
         </tr>
     </thead>
 
@@ -116,25 +130,28 @@
 
                 <td>{{ $subj->prerequisite->name ?? 'None' }}</td>
 
-                <td>
-                    <a href="{{ route('subjects.edit', $subj) }}"
-                       class="btn btn-primary btn-sm">
-                        Edit
-                    </a>
+                @auth
+                    <td>
+                        <a href="{{ route('subjects.edit', $subj) }}"
+                           class="btn btn-primary btn-sm">
+                            Edit
+                        </a>
 
-                    <form action="{{ route('subjects.destroy', $subj) }}"
-                          method="POST"
-                          class="d-inline"
-                          onsubmit="return confirm('Delete this record?')">
-                        @csrf
-                        @method('DELETE')
+                        <form action="{{ route('subjects.destroy', $subj) }}"
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Delete this record?')">
+                            @csrf
+                            @method('DELETE')
 
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
-                    </form>
-                </td>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                @endauth
             </tr>
+
         @empty
             <tr>
                 <td colspan="7" class="text-center">

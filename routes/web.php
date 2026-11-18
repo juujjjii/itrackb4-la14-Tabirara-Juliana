@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\SubjectsController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\LoginController;
 
 use App\Http\Controllers\HomeController;
 
@@ -15,5 +16,19 @@ Route::get('/subjects/filter/{units?}', function ($units = null) {
     return redirect()->route('subjects.index', $units !== null ? ['units' => $units] : []);
 })->name('subjects.filter');
 
-Route::resource('subjects', SubjectsController::class);
-   // (['index', 'show', 'create', 'store']);
+Route::resource('subjects', SubjectsController::class)
+    ->middlewareFor(
+        ['create', 'store', 'edit', 'update', 'destroy'],
+        'auth'
+    );
+Route::get('/register', [RegisterController::class, 'create'])->name('register');
+
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+Route::get('/login', [LoginController::class, 'create'])
+    ->name('signin');
+
+Route::post('/login', [LoginController::class, 'store'])
+    ->name('login.store');
+
+Route::post('/logout', [LoginController::class, 'destroy'])
+    ->name('logout');
